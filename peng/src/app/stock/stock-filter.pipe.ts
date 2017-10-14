@@ -15,7 +15,5 @@ export class StockFilterPipe implements PipeTransform {
       const itemFieldValue = item[field].toLowerCase();
       return itemFieldValue.indexOf(keyword) >= 0;
     });
-
   }
-
 }
