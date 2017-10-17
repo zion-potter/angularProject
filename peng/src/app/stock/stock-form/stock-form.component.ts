@@ -12,7 +12,7 @@ export class StockFormComponent implements OnInit {
 
   formModel: FormGroup;
 
-  stock: Stock;
+  stock: Stock = new Stock(0, '', 0, 0, '', []);
 
   categories = ['IT', '互联网', '金融'];
 
@@ -22,19 +22,34 @@ export class StockFormComponent implements OnInit {
 
   ngOnInit() {
     const stockId = this.routeInfo.snapshot.params['id'];
-    this.stock = this.stockService.getStock(stockId);
 
     const fb = new FormBuilder();
     this.formModel = fb.group({
-      name: [this.stock.name, [Validators.required, Validators.minLength(3)]],
-      price: [this.stock.price, Validators.required],
-      desc: [this.stock.desc],
+      name: ['', [Validators.required, Validators.minLength(3)]],
+      price: ['', Validators.required],
+      desc: [''],
       categories: fb.array([
-        new FormControl(this.stock.categories.indexOf(this.categories[0]) !== -1),
-        new FormControl(this.stock.categories.indexOf(this.categories[1]) !== -1),
-        new FormControl(this.stock.categories.indexOf(this.categories[2]) !== -1)
+        new FormControl(false),
+        new FormControl(false),
+        new FormControl(false)
       ], this.categoriesSelectValidor)
     });
+
+    this.stockService.getStock(stockId).subscribe(
+      data => {
+        this.stock = data;
+        this.formModel.reset({
+          name: data.name,
+          price: data.price,
+          desc: data.desc,
+          categories: [
+            data.categories.indexOf(this.categories[0]) !== -1,
+            data.categories.indexOf(this.categories[1]) !== -1,
+            data.categories.indexOf(this.categories[2]) !== -1
+          ]
+        });
+      }
+    );
   }
 
   categoriesSelectValidor(control: FormArray) {
