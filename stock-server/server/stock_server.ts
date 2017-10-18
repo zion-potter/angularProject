@@ -1,8 +1,11 @@
 
 import * as express from 'express';
+import * as path from 'path';
 import {Server} from "ws";
 
 const app = express();
+
+app.use('/', express.static(path.join(__dirname, '..', 'client')))
 
 app.get('/api/stock', (req, res) => {
     let result = stocks;
